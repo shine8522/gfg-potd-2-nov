@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Largest Sum Cycle – interactive dry run</title>
+<style>
+:root{--bg:#0c1118;--p:#151c26;--p2:#1e2733;--vf:#2d3b4d;--tx:#e8eef5;--mu:#93a1b3;--ac:#5cb0ff;--cy:#ffb020;--ok:#3ecf72;--bad:#ff6b6b;--bd:#2c3746;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root{--bg:#f4f6f9;--p:#fff;--p2:#eaeef3;--vf:#cfd8e3;--tx:#18202b;--mu:#556171;--ac:#0a64c8;--cy:#b45d00;--ok:#13783a;--bad:#c62828;--bd:#cdd5df}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif;overflow-x:hidden}
+.w{max-width:1200px;margin:0 auto;padding:14px}
+h1{font:700 clamp(26px,5vw,40px)/1.1 Georgia,"Times New Roman",serif;margin:0 0 4px;letter-spacing:-.5px}
+h2{font-size:17px;margin:0 0 8px}
+.tag{color:var(--mu);margin:0 0 10px}
+.card{background:var(--p);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.badge{border:1px solid var(--bd);border-radius:99px;padding:2px 10px;font-size:13px;color:var(--mu)}
+button,select,input,textarea{font:inherit;color:var(--tx);background:var(--p2);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;min-height:40px}
+button{cursor:pointer}button:hover{border-color:var(--ac)}
+button.pri{background:var(--ac);color:#04121f;border-color:var(--ac);font-weight:700}
+:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:10px 0}.tabs button{white-space:nowrap}
+.tabs button[aria-selected=true]{border-color:var(--ac);background:var(--vf)}
+.grid{display:grid;grid-template-columns:1.05fr 1fr;gap:12px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+svg{width:100%;height:auto;display:block}
+.bar{height:6px;background:var(--p2);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);width:0}
+#msg{min-height:3.2em}
+.q{border:1px solid var(--cy);border-radius:10px;padding:10px;margin-top:8px}
+.good{color:var(--ok)}.bad{color:var(--bad)}
+.code{font:13px/1.65 ui-monospace,Consolas,monospace;max-height:430px;overflow:auto;border:1px solid var(--bd);border-radius:10px;background:var(--bg)}
+.ln{white-space:pre;padding:0 8px;cursor:pointer;display:flex;border-left:4px solid transparent;opacity:.55}
+.ln b{width:28px;flex:none;color:var(--mu);font-weight:400}
+.ln.ex{opacity:.9}.ln.cur{opacity:1;background:var(--vf);border-left-color:var(--cy)}
+.kw{color:#ff8fab}.fn{color:#7ee0b8}.nu{color:#ffd479}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid var(--bd);padding:3px 8px;text-align:center}tr.hl td{background:var(--vf);font-weight:700}
+.chip{display:inline-block;border:1px solid var(--bd);border-radius:8px;padding:0 8px;margin:2px;background:var(--p2)}.chip.c{border-color:var(--cy);color:var(--cy);font-weight:700}
+.lg span{font-size:12px;border:2px solid var(--mu);border-radius:99px;padding:0 8px;background:var(--p)}
+.cell{display:inline-block;width:38px;height:38px;line-height:34px;text-align:center;border:2px solid var(--mu);border-radius:9px;margin:2px}
+.cell.on{background:var(--cy);color:#111;border-color:var(--cy)}.cell.skip{border-style:dashed;opacity:.5}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body><div class="w">
+<header>
+<h1>Largest Sum Cycle</h1>
+<p class="tag">Understand the logic, don’t memorize the pattern.</p>
+<div class="row"><span class="badge">Time O(N)</span><span class="badge">Space O(N)</span><button id="lang" aria-pressed="false">Hinglish</button></div>
+<div class="card" style="margin-top:10px"><p id="prob" style="margin:0"></p></div>
+<div class="bar" aria-hidden="true"><i id="gprog"></i></div>
+</header>
+<div class="tabs" role="tablist" id="tabs"></div>
+
+<section id="t0">
+<div class="card"><div class="row">
+<label>Example <select id="cs"></select></label>
+<label>Custom <input id="cin" placeholder="1,2,3,1,-1" size="14" aria-describedby="cerr"></label><button id="crun">Run custom</button></div>
+<p id="cerr" role="alert" class="bad" style="margin:6px 0 0"></p><p id="cinfo" class="tag" style="margin:6px 0 0"></p></div>
+<div class="grid"><div>
+<div class="card"><svg id="g" viewBox="0 0 320 300" role="img" aria-label="Graph of the current example"></svg>
+<div class="lg row" aria-label="Legend"><span>○ unvisited</span><span style="background:var(--vf)">✓ visited</span><span style="border-style:dashed;border-color:var(--ac)">on current path</span><span style="border-color:var(--cy);color:var(--cy)">↻ cycle</span><span style="border-color:var(--ac)">▼ current</span><span>−1 ✕ ended</span></div></div>
+<div class="card"><div class="row">
+<button class="pri" id="play">Start Dry Run</button><button id="prev" aria-label="Previous step">◀ Prev</button><button id="next" aria-label="Next step">Next ▶</button><button id="rst">Restart</button>
+<select id="spd" aria-label="Speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></div>
+<p class="tag" style="margin:8px 0 4px" id="stp"></p><div class="bar"><i id="pb"></i></div>
+<p id="msg" aria-live="polite"></p><div id="qbox" hidden class="q"></div></div></div>
+<div><div class="card"><h2>C++ code <small class="tag">(click a line)</small></h2><div class="code" id="code" role="list"></div><div id="lexp" class="tag" style="margin-top:8px">Click any line to see what it does, why it exists, and what breaks without it.</div></div>
+<div class="card"><h2>Inspector</h2><div id="insp"></div></div></div></div>
+</section>
+
+<section id="t1" hidden><div class="card"><h2>Why visited[] alone fails</h2>
+<p><b>visited[]</b> answers: “seen anywhere, ever?” <b>pathVis[]</b> answers: “on the traversal happening right now?” A cycle needs the second one.</p>
+<div class="grid"><div class="card" id="w1"></div><div class="card" id="w2"></div></div></div></section>
+
+<section id="t2" hidden><div class="card"><h2>Complexity, derived</h2>
+<p>Outer loop: N iterations. A node is marked <code>vis=1</code> once and never unmarked, so across <i>all</i> traversals the while-loop pushes at most N nodes in total. The start search, the sum loop and the pathVis reset each touch only nodes of one path, and each node sits in exactly one path. So total work ≈ N (walk) + N (search) + N (sum) + N (reset) + N (skips) = O(N).</p>
+<p>One traversal can cost O(N) in the worst case, but that cost is shared: nodes it consumes are skipped later. Nested loops do not automatically mean O(N²) – what matters is how many times each node is touched in total.</p>
+<p><b>Space:</b> vis, pathVis and path are each at most N → O(N) auxiliary.</p>
+<button id="chainb" class="pri">Run chain demo</button><div id="chain" style="margin:8px 0"></div><p id="chainlog" class="tag"></p></div></section>
+
+<section id="t3" hidden><div class="card"><h2>Interview mode</h2><p class="tag" id="iq0"></p><h2 id="iq"></h2>
+<div class="row"><button id="ih">Hint</button><button id="ia">Reveal answer</button><button id="ip">◀</button><button id="in">▶</button></div>
+<p id="ihint" class="tag"></p><p id="ians"></p><p class="tag">Challenge: say your answer aloud first, in under 30 seconds.</p></div></section>
+
+<section id="t4" hidden><div class="card"><h2>Summary</h2><table id="sum"></table>
+<p><b>Time:</b> O(N) &nbsp; <b>Auxiliary space:</b> O(N)</p><h2>Final challenge</h2>
+<p>Can you explain why visited[] alone is not enough?</p>
+<textarea id="fa" rows="4" style="width:100%" aria-label="Your answer"></textarea>
+<div class="row" style="margin-top:8px"><button id="fb" class="pri">Check my answer</button></div><p id="fr"></p></div></section>
+</div>
+
+<script>
+//ENGINE
+function indep(e){const n=e.length;let b=-1;for(let s=0;s<n;s++){let x=s;for(let k=0;k<n&&x!==-1;k++)x=e[x];if(x===-1)continue;let t=0,y=x;do{t+=y;y=e[y]}while(y!==x);b=Math.max(b,t)}return b}
+function sim(e){
+const n=e.length,vis=Array(n).fill(0),pv=Array(n).fill(0),out=[];let mx=-1,i=-1,curr=null,path=[],start=-1,sum=0,cyc=[],ret=null,j=null;
+const P=(line,en,hi,q)=>out.push({line,en,hi:hi||en,q,i,curr,j,path:[...path],vis:[...vis],pv:[...pv],mx,start,sum,cyc:[...cyc],ret});
+P(3,`n = ${n} nodes. Every array below has this size.`,`n = ${n} nodes hain.`);
+P(4,'vis[] starts all 0: nothing visited yet.','vis[] sab 0: abhi kuch visit nahi hua.');
+P(5,'pathVis[] starts all 0: no current path yet.','pathVis[] sab 0: abhi koi current path nahi.');
+P(6,'maxsum = -1: no cycle found yet.','maxsum = -1: abhi tak cycle nahi mila.');
+for(i=0;i<n;i++){
+curr=null;path=[];start=-1;sum=0;j=null;
+P(7,`Outer loop: try node ${i} as a start.`,`Outer loop: node ${i} se start try karo.`);
+if(vis[i]){P(8,`vis[${i}] = 1: already processed, skip it.`,`vis[${i}] = 1: pehle hi ho chuka, skip.`);continue}
+P(8,`vis[${i}] = 0: begin a new traversal here.`,`vis[${i}] = 0: yahan se nayi traversal shuru.`);
+curr=i;P(9,`curr = ${i}`,`curr = ${i}`);
+P(10,'path = [] (empty list for this traversal).','path = [] (is traversal ke liye khali list).');
+for(;;){
+const go=curr!==-1&&!vis[curr];
+P(11,go?`curr = ${curr} is valid and unvisited → keep walking.`:curr===-1?'curr = -1: dead end, stop. (&& short-circuits, vis[-1] is never read.)':`vis[${curr}] = 1: node already seen → stop walking.`,go?`curr = ${curr} valid aur naya hai → chalte raho.`:curr===-1?'curr = -1: aage edge nahi, ruk jao.':`vis[${curr}] = 1: node pehle dekha ja chuka → ruko.`);
+if(!go)break;
+path.push(curr);P(12,`path = [${path}]`,`path = [${path}]`);
+vis[curr]=1;P(13,`vis[${curr}] = 1 (stays 1 forever).`,`vis[${curr}] = 1 (hamesha 1 rahega).`);
+pv[curr]=1;P(14,`pathVis[${curr}] = 1: on the current path.`,`pathVis[${curr}] = 1: current path par hai.`);
+curr=e[curr];P(15,curr===-1?'Follow edge → -1: no outgoing edge.':`Follow edge → curr = ${curr}.`,curr===-1?'Edge → -1: aage koi edge nahi.':`Edge follow karo → curr = ${curr}.`)}
+const cy=curr!==-1&&pv[curr]===1;let q=null;
+if(curr!==-1)q={t:`The walk stopped at node ${curr}. vis[${curr}] = 1 and pathVis[${curr}] = ${pv[curr]}. Is this a cycle?`,o:['Yes, a cycle','No cycle'],a:cy?0:1,w:cy?`pathVis[${curr}] = 1: node ${curr} is on THIS traversal, and the edges led back to it – a cycle.`:`pathVis[${curr}] = 0: node ${curr} belongs to an earlier traversal. Being visited does not prove a cycle here.`};
+P(17,cy?`Cycle found: pathVis[${curr}] = 1, so node ${curr} is on the current path.`:curr===-1?'Traversal ended at -1: no cycle in this traversal.':`pathVis[${curr}] = 0: it was visited by an earlier traversal → no new cycle.`,cy?`Cycle mila: pathVis[${curr}] = 1.`:curr===-1?'-1 par ruka: is traversal mein cycle nahi.':`pathVis[${curr}] = 0: purani traversal ka node → cycle nahi.`,q);
+if(cy){
+P(18,'start = -1: cycle start not located yet.');
+for(j=0;j<path.length;j++){P(19,`Scan path, j = ${j}.`);P(20,`path[${j}] = ${path[j]} ${path[j]===curr?'==':'≠'} ${curr}`);
+if(path[j]===curr){start=j;cyc=[...new Set([...cyc,...path.slice(j)])];P(21,`start = ${j}. Cycle = [${path.slice(j)}]. Prefix [${path.slice(0,j)}] is outside the cycle.`,`start = ${j}. Cycle = [${path.slice(j)}]. Prefix [${path.slice(0,j)}] cycle ka hissa nahi.`);P(22,'break: first match is the cycle start.');break}}
+j=null;sum=0;P(25,'sum = 0');
+for(j=start;j<path.length;j++){sum+=path[j];P(27,`sum += ${path[j]} → ${sum}`)}
+j=null;const old=mx,up=sum>mx;mx=Math.max(mx,sum);
+P(29,up?`maxsum = max(${old}, ${sum}) = ${mx}: updated!`:`maxsum = max(${old}, ${sum}) = ${mx}: unchanged.`,up?`maxsum = max(${old}, ${sum}) = ${mx}: update hua!`:`maxsum same rahा ${mx}.`.replace('rahा','raha'))}
+for(const nd of path){pv[nd]=0;P(32,`pathVis[${nd}] = 0 reset. vis[${nd}] stays 1.`,`pathVis[${nd}] = 0 reset. vis[${nd}] 1 hi rehta hai.`)}
+}
+curr=null;ret=mx;P(35,`return ${mx}`+(mx===-1?' (no cycle exists).':'.'));
+return out}
+//END
+const CODE=`class Solution {
+public:
+    int largestSumCycle(vector<int>& edge) {
+        int n = edge.size();
+        vector<int> vis(n, 0);
+        vector<int> pathVis(n, 0);
+        int maxsum = -1;
+        for (int i = 0; i < n; i++) {
+            if (vis[i]) continue;
+            int curr = i;
+            vector<int> path;
+            while (curr != -1 && vis[curr] == 0) {
+                path.push_back(curr);
+                vis[curr] = 1;
+                pathVis[curr] = 1;
+                curr = edge[curr];
+            }
+            if (curr != -1 && pathVis[curr] == 1) {
+                int start = -1;
+                for (int j = 0; j < path.size(); j++) {
+                    if (path[j] == curr) {
+                        start = j;
+                        break;
+                    }
+                }
+                int sum = 0;
+                for (int j = start; j < path.size(); j++) {
+                    sum += path[j];
+                }
+                maxsum = max(maxsum, sum);
+            }
+            for (int node : path) {
+                pathVis[node] = 0;
+            }
+        }
+        return maxsum;
+    }
+};`.split('\n');
+const EXP={3:'What: n = node count. Why: sizes every array. Without it we cannot index safely.',4:'vis[i]=1 means node i was processed in ANY earlier traversal. Zero-init so 0 = unseen (never -1). It is never reset – that is what keeps total work O(N).',5:'pathVis[i]=1 means node i is on the traversal running right now. Without it we cannot tell a fresh cycle from a node of an old component.',6:'Best cycle sum so far. -1 means “no cycle”, because real sums are ≥ 0 (a self-loop on node 0 gives 0).',7:'Try every node as a start; nodes may be unreachable from node 0.',8:'Skip nodes already handled. Remove it and work repeats, breaking O(N).',9:'curr walks the graph starting at i.',10:'path stores this traversal in order so we can slice out the exact cycle later.',11:'Keep walking while a next node exists (curr != -1) AND it is new (vis[curr]==0). && short-circuits, so vis[-1] is never read. Swap the order and you read out of bounds.',12:'Record the node in visit order.',13:'Mark visited globally and forever.',14:'Mark on the current path (used for cycle detection).',15:'Follow the outgoing edge: it may be -1, an old node, or a node on this path.',17:'Cycle test. curr != -1: the walk ended on a real node. pathVis[curr]==1: that node is on THIS path. Using vis alone would call every earlier component a cycle.',18:'start = index in path where the cycle begins. -1 = not found yet.',19:'Scan path from the left for the repeated node.',20:'Is this position the repeated node curr?',21:'Remember its position. Everything before it is a prefix leading in, not the cycle.',22:'Stop at the first match; each node appears once in path.',25:'Accumulator for this cycle only.',26:'Loop from start to the end of path: exactly the cycle nodes. curr is not pushed again, so it is never counted twice. Starting at 0 would wrongly include the prefix.',27:'Add this cycle node’s index.',29:'Keep the largest cycle sum. With several cycles we want the max, not the total.',31:'The traversal is over (cycle or not): clean the current-path marks.',32:'pathVis[node]=0. Without this, the next traversal would think old nodes are on its path and report false cycles. vis stays 1.',35:'Return the best sum, or -1 if no cycle was ever found.'};
+const CASES=[
+{k:'A · one cycle',e:[1,2,3,1,-1],x:6,w:'0 leads into the cycle 1→2→3→1. Node 4 has no outgoing edge. Cycle sum 1+2+3 = 6; node 0 is outside the cycle (0+1+2+3 also equals 6 here only by coincidence – see example G).'},
+{k:'B · no cycle',e:[1,2,-1],x:-1,w:'0→1→2→-1 ends. No node is revisited on a path, so maxsum stays -1.'},
+{k:'C · self-loop',e:[0],x:0,w:'Node 0 points to itself: a cycle of one node, sum 0. That is why the answer starts at -1, not 0.'},
+{k:'D · multiple cycles',e:[1,0,3,2],x:5,w:'Cycles 0↔1 (sum 1) and 2↔3 (sum 5). We keep the maximum: 5.'},
+{k:'E · prefix into self-loop',e:[2,3,4,2,4],x:4,w:'0→2→4→4. The repeated node is 4, so the only cycle is the self-loop at 4 (sum 4). Node 2 leads in but is not in the cycle. Traversal 1→3→2 hits an old node, no cycle.'},
+{k:'F · earlier-component trap',e:[1,2,-1,1],x:-1,w:'First walk 0→1→2→-1. Then 3→1 hits node 1, which is visited but pathVis[1]=0 – an earlier traversal, so no cycle.'},
+{k:'G · prefix changes the sum',e:[1,2,3,2,-1],x:5,w:'0→1→2→3→2. Cycle is 2→3 (sum 5). Wrongly adding the prefix 0,1 would give 6. Only the suffix from the repeated node counts.'}];
+const Q=[['Why is visited[] alone insufficient?','Think about example F.','Visited also marks nodes from earlier traversals. Reaching one of them does not mean the current walk looped back; we need to know it is on the current path.'],
+['What is the purpose of pathVis[]?','Current walk vs whole run.','It marks nodes on the traversal in progress, so seeing one again proves a cycle in this traversal.'],
+['Why reset pathVis[] but not visited[]?','Which one must stay accurate for future walks?','pathVis describes only the current walk, so it must start clean. visited records finished work; keeping it prevents re-processing.'],
+['Why check curr != -1 before vis[curr]?','What index is -1?','vis[-1] is out of bounds. && short-circuits, so the right side runs only when curr is a valid index.'],
+['Why does the cycle sum start at the repeated node?','What lies before it in path?','Nodes before the repeated node are the prefix leading into the cycle. The cycle is path[start..end].'],
+['What happens when a node points to itself?','Walk it by hand with [0].','path=[x], curr returns to x, pathVis[x]=1, start=0, sum=x. The cycle is that single node.'],
+['Why is the answer initialized to -1?','Can a valid cycle sum be 0?','A self-loop at node 0 gives sum 0, so 0 cannot mean “none”. -1 is impossible as a sum.'],
+['Why is it O(N) despite nested loops?','Count touches per node.','Each node is walked once (vis never resets), appears in one path, and is searched, summed and reset only through that path. Total ≈ constant × N.'],
+['What is the auxiliary space?','Name the arrays.','vis, pathVis and path are each up to N: O(N).'],
+['What if several cycles exist?','Each traversal can find at most one.','Each is found once, its sum compared, and maxsum keeps the largest.'],
+['Why is the repeated node not counted twice?','Is curr pushed again?','The loop stops before pushing curr again, so path holds it once. The sum loop covers path only.'],
+['What if the walk ends at a node from an earlier traversal?','Check pathVis there.','vis=1 stops the walk, pathVis=0 says it is not on this path, so no cycle; we just reset pathVis for this path.']];
+const $=s=>document.querySelector(s),E=(t,c,h)=>{const x=document.createElement(t);if(c)x.className=c;if(h!=null)x.innerHTML=h;return x};
+let S=[],k=0,cur=null,edge=[],tm=null,hi=false,ans={};
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const PROB={en:'Each index is a node and edge[i] is the node you reach from i (-1 = no outgoing edge). A cycle is when following edges returns to a node already on the same walk. A cycle’s sum is the sum of its node indices. Return the maximum cycle sum, or -1 if there is none.',
+hi:'Har index ek node hai. edge[i] batata hai i se next node kaunsa hai (-1 = aage koi edge nahi). Cycle tab banti hai jab edges follow karte karte usi walk ke kisi node par wapas aa jao. Cycle ke nodes ka sum nikalna hai; multiple cycles hon toh maximum sum return karo, cycle na ho toh -1.'};
+function pos(n){const r=n<2?0:n<4?75:100;return Array.from({length:n},(_,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;return[160+r*Math.cos(a),150+r*Math.sin(a)]})}
+const un=(a,b)=>{const d=Math.hypot(a,b)||1;return[a/d,b/d]};
+function graph(s){const n=edge.length,P=pos(n),R=20;const sp=+$('#spd').value;
+let h='<defs>'+[['a','--mu'],['b','--ac'],['c','--cy']].map(([i,c])=>`<marker id="${i}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(${c})"/></marker>`).join('')+'</defs>';
+const L=s.path.length?s.path[s.path.length-1]:null,live=s.curr!==null&&s.curr!==-1&&[11,15,17].includes(s.line)&&L!==null&&edge[L]===s.curr;let mv='';
+for(let u=0;u<n;u++){const v=edge[u],isC=s.cyc.includes(u),act=live&&u===L,st=isC?'var(--cy)':act?'var(--ac)':'var(--mu)',mk=isC?'c':act?'b':'a',sw=isC||act?3.2:1.8;
+const o=un(P[u][0]-160,P[u][1]-150);const d0=n===1?[0,-1]:o;
+if(v<0){const a=[P[u][0]+d0[0]*R,P[u][1]+d0[1]*R],b=[P[u][0]+d0[0]*(R+26),P[u][1]+d0[1]*(R+26)];h+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--mu)" stroke-width="2" stroke-dasharray="3 3"/><text x="${b[0]+d0[0]*14}" y="${b[1]+d0[1]*14+4}" fill="var(--mu)" font-size="12" text-anchor="middle">−1 ✕</text>`;continue}
+let d;if(u===v){const p=[-d0[1],d0[0]],c=P[u],f=(m,q)=>`${c[0]+d0[0]*m+p[0]*q} ${c[1]+d0[1]*m+p[1]*q}`;d=`M ${f(R*.9,10)} C ${f(R+40,26)} ${f(R+40,-26)} ${f(R*.9,-10)}`}
+else{const m=[(P[u][0]+P[v][0])/2,(P[u][1]+P[v][1])/2],p=un(-(P[v][1]-P[u][1]),P[v][0]-P[u][0]),c=[m[0]+p[0]*22,m[1]+p[1]*22],s1=un(c[0]-P[u][0],c[1]-P[u][1]),t1=un(c[0]-P[v][0],c[1]-P[v][1]);
+d=`M ${P[u][0]+s1[0]*R} ${P[u][1]+s1[1]*R} Q ${c[0]} ${c[1]} ${P[v][0]+t1[0]*(R+4)} ${P[v][1]+t1[1]*(R+4)}`}
+h+=`<path d="${d}" fill="none" stroke="${st}" stroke-width="${sw}" marker-end="url(#${mk})"/>`;
+if(act&&!RM)mv=`<circle r="5" fill="var(--ac)"><animateMotion dur="${(.9/sp).toFixed(2)}s" path="${d}" fill="freeze"/></circle>`}
+const inCur=s.line>=9&&s.line<=17;
+for(let i=0;i<n;i++){const[x,y]=P[i],c=s.cyc.includes(i),p=s.pv[i],v=s.vis[i],isCur=inCur&&s.curr===i;
+const fill=c?'var(--cy)':v?'var(--vf)':'var(--p)',str=c?'var(--cy)':p?'var(--ac)':'var(--mu)',lab=c?'↻ cycle':p?'on path':v?'✓ done':'';
+if(isCur)h+=`<circle cx="${x}" cy="${y}" r="${R+6}" fill="none" stroke="var(--ac)" stroke-width="2"/><text x="${x}" y="${y-R-10}" text-anchor="middle" font-size="11" fill="var(--ac)">▼ curr</text>`;
+h+=`<circle cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="${str}" stroke-width="${c?4:2.5}" ${p&&!c?'stroke-dasharray="5 3"':''}/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="15" font-weight="700" fill="${c?'#1a1100':'var(--tx)'}">${i}</text><text x="${x}" y="${y+R+13}" text-anchor="middle" font-size="10" fill="var(--mu)">${lab}</text>`}
+$('#g').innerHTML=h+mv}
+function render(){const s=S[k],last=S.length-1;graph(s);
+document.querySelectorAll('#code .ln').forEach((el,i)=>{el.classList.toggle('cur',i===s.line);el.classList.toggle('ex',S.slice(0,k+1).some(t=>t.line===i))});
+const cl=document.querySelector('#code .cur');if(cl){const c=$('#code');c.scrollTop=cl.offsetTop-c.clientHeight/2}
+$('#msg').textContent=hi?s.hi:s.en;$('#stp').textContent=`Step ${k+1} / ${S.length}`;$('#pb').style.width=(k/last*100)+'%';$('#gprog').style.width=(k/last*100)+'%';
+const q=s.q,qb=$('#qbox');
+if(q&&!(k in ans)){qb.hidden=false;qb.innerHTML=`<b>Predict:</b> ${q.t}<div class="row" style="margin-top:6px"></div>`;const r=qb.querySelector('.row');q.o.forEach((o,i)=>{const b=E('button',0,o);b.onclick=()=>{if(i===q.a){ans[k]=1;qb.innerHTML=`<b class="good">Correct.</b> ${q.w}`}else{qb.querySelector('p')?.remove();qb.append(E('p','bad','Not quite – '+(i===0?'check pathVis for that node and try again.':'look at pathVis for that node and try again.')))}};r.append(b)});const sk=E('button',0,'Skip question');sk.onclick=()=>{ans[k]=1;qb.hidden=true};r.append(sk)}
+else if(q&&ans[k]){qb.hidden=false;qb.innerHTML=`<b class="good">Answered.</b> ${q.w}`}else qb.hidden=true;
+let t=`<p style="margin:0 0 6px">i = <b>${s.i<0?'–':s.i}</b>, curr = <b>${s.curr===null?'–':s.curr}</b>, j = <b>${s.j===null?'–':s.j}</b>, start = <b>${s.start}</b>, sum = <b>${s.sum}</b>, maxsum = <b>${s.mx}</b></p><p style="margin:0 0 6px">path = ${s.path.length?s.path.map(x=>`<span class="chip ${s.cyc.includes(x)&&s.start>=0&&s.path.indexOf(x)>=s.start?'c':''}">${x}</span>`).join(''):'[ ]'}</p><table><tr><th>Node</th><th>vis[]</th><th>pathVis[]</th></tr>`;
+s.vis.forEach((v,i)=>t+=`<tr class="${s.curr===i?'hl':''}"><td>${i}</td><td>${v}</td><td>${s.pv[i]}</td></tr>`);
+$('#insp').innerHTML=t+'</table>'+(s.ret!==null?`<p class="good"><b>Answer: ${s.ret}</b></p>`:'');
+$('#prev').disabled=k===0;$('#next').disabled=k===last;
+$('#play').textContent=tm?'Pause':k===0?'Start Dry Run':k===last?'Replay':'Resume'}
+function pause(){clearInterval(tm);tm=null}
+function tick(){if(k>=S.length-1){pause();render();return}k++;render();if(S[k].q&&!(k in ans))pause(),render()}
+function playTog(){if(tm){pause();render();return}if(k>=S.length-1)k=0;if(S[k].q&&!(k in ans)){render();return}tm=setInterval(tick,1100/+$('#spd').value);tick();render()}
+function load(e,i){pause();edge=e;S=sim(e);k=0;ans={};const r=S[S.length-1].ret,ok=r===indep(e);
+$('#cinfo').innerHTML=(i!=null?`Expected answer ${CASES[i].x}. ${CASES[i].w}<br>`:'')+`Engine result <b>${r}</b> · independent check ${indep(e)} ${ok?'<span class="good">✓ match</span>':'<span class="bad">✗ mismatch</span>'}`;render()}
+function custom(){const raw=$('#cin').value.replace(/[\[\]\s]/g,''),er=$('#cerr');er.textContent='';
+if(!raw){er.textContent='Enter numbers separated by commas, e.g. 1,2,3,1,-1.';return}
+const t=raw.split(',');if(t.some(x=>!/^-?\d+$/.test(x))){er.textContent='Only whole numbers separated by commas are allowed.';return}
+const a=t.map(Number);if(a.length>12){er.textContent='Use at most 12 nodes so the graph stays readable.';return}
+for(let i=0;i<a.length;i++)if(a[i]<-1||a[i]>=a.length){er.textContent=`edge[${i}] = ${a[i]} is invalid. Use -1 or a node index from 0 to ${a.length-1}.`;return}
+$('#cs').value='custom';load(a,null)}
+// init
+$('#code').append(...CODE.map((l,i)=>{const d=E('div','ln');d.setAttribute('role','listitem');d.tabIndex=0;d.innerHTML=`<b>${i}</b><span>${l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\b(class|public|int|for|while|if|continue|break|return)\b|\b(vector|max)\b|\b(\d+)\b/g,(m,a,b,c)=>`<span class="${a?'kw':b?'fn':'nu'}">${m}</span>`)}</span>`;
+const f=()=>{const ex=EXP[i]||'Structure line (braces, signature or label).',j=S.findIndex(t=>t.line===i);$('#lexp').innerHTML=`<b>Line ${i}:</b> ${ex} `;const b=E('button',0,j<0?'Not run in this example':'Jump to this line');b.disabled=j<0;b.onclick=()=>{pause();k=j;render()};$('#lexp').append(b)};d.onclick=f;d.onkeydown=ev=>{if(ev.key==='Enter')f()};return d}));
+CASES.forEach((c,i)=>$('#cs').append(new Option(c.k,i)));$('#cs').append(new Option('Custom','custom'));
+$('#cs').onchange=ev=>{if(ev.target.value!=='custom'){$('#cerr').textContent='';load(CASES[+ev.target.value].e,+ev.target.value)}};
+$('#crun').onclick=custom;$('#cin').onkeydown=ev=>{if(ev.key==='Enter')custom()};
+$('#play').onclick=playTog;$('#next').onclick=()=>{pause();if(k<S.length-1)k++;render()};$('#prev').onclick=()=>{pause();if(k>0)k--;render()};$('#rst').onclick=()=>{pause();k=0;ans={};render()};
+$('#spd').onchange=()=>{if(tm){pause();playTog()}};
+$('#lang').onclick=()=>{hi=!hi;$('#lang').setAttribute('aria-pressed',hi);$('#lang').textContent=hi?'English':'Hinglish';$('#prob').textContent=hi?PROB.hi:PROB.en;render()};
+document.addEventListener('keydown',ev=>{if(/INPUT|TEXTAREA|SELECT|BUTTON/.test(ev.target.tagName))return;if(ev.key==='ArrowRight')$('#next').click();if(ev.key==='ArrowLeft')$('#prev').click();if(ev.key===' '){ev.preventDefault();playTog()}});
+$('#prob').textContent=PROB.en;
+// tabs
+const TN=['Dry Run','Why pathVis[]?','Complexity','Interview','Summary'];
+TN.forEach((n,i)=>{const b=E('button',0,n);b.setAttribute('role','tab');b.setAttribute('aria-selected',i===0);b.onclick=()=>{TN.forEach((_,j)=>{$('#t'+j).hidden=j!==i;$('#tabs').children[j].setAttribute('aria-selected',j===i)});if(i===1)why()};$('#tabs').append(b)});
+function why(){[[[1,2,-1,1],'#w1','Earlier traversal'],[[1,2,3,1,-1],'#w2','Current traversal']].forEach(([e,id,ttl])=>{const st=sim(e),si=st.findIndex(s=>s.line===17&&s.curr!==-1),s=st[si];
+$(id).innerHTML=`<h2>edge = [${e}]</h2><p class="tag">Walk stops at node ${s.curr} (${ttl.toLowerCase()})</p><table><tr><th>Node</th><th>visited[]</th><th>pathVis[]</th></tr>${s.vis.map((v,i)=>`<tr class="${i===s.curr?'hl':''}"><td>${i}</td><td>${v}</td><td>${s.pv[i]}</td></tr>`).join('')}</table><p>visited[${s.curr}] = 1, pathVis[${s.curr}] = ${s.pv[s.curr]} → <b class="${s.pv[s.curr]?'good':'bad'}">${s.pv[s.curr]?'on the current walk: CYCLE':'from an earlier walk: NO cycle'}</b></p>`;
+const b=E('button','pri','Watch this step in the dry run');b.onclick=()=>{$('#tabs').children[0].click();const ci=CASES.findIndex(c=>c.e.join()===e.join());$('#cs').value=ci;load(e,ci);k=si;render()};$(id).append(b)})}
+// complexity demo
+let ct=null;$('#chainb').onclick=()=>{clearInterval(ct);const n=8,box=$('#chain'),lg=$('#chainlog');box.innerHTML='';const cs=[];for(let i=0;i<n;i++){const c=E('div','cell',i);box.append(c);cs.push(c)}let i=0,w=0;lg.textContent='';
+ct=setInterval(()=>{if(i>=n){clearInterval(ct);lg.textContent+=` Done: about ${w} units of work for ${n} nodes – linear.`;return}
+if(i===0){cs.forEach(c=>c.className='cell on');w+=n;lg.textContent=`i=0 walks the whole chain once (work ${n}).`}else{cs[i].className='cell skip';w+=1;lg.textContent=`i=${i}: vis[${i}] = 1 → skip (total ${w}).`}i++},RM?200:700)};
+// interview
+let qi=0;function rq(){$('#iq0').textContent=`Question ${qi+1} of ${Q.length}`;$('#iq').textContent=Q[qi][0];$('#ihint').textContent='';$('#ians').textContent=''}
+$('#ih').onclick=()=>$('#ihint').textContent='Hint: '+Q[qi][1];$('#ia').onclick=()=>$('#ians').textContent=Q[qi][2];$('#ip').onclick=()=>{qi=(qi+Q.length-1)%Q.length;rq()};$('#in').onclick=()=>{qi=(qi+1)%Q.length;rq()};rq();
+// summary
+$('#sum').innerHTML=[['visited[]','Have we visited this node before?'],['pathVis[]','Does this node belong to the current traversal?'],['path[]','Which nodes did we encounter, in order?'],['cycle start','Where does the cycle begin within the stored path?'],['cycle sum','Add only the indices belonging to the cycle.'],['maxsum','Keep the largest cycle sum found so far.']].map(r=>`<tr><td><b>${r[0]}</b></td><td style="text-align:left">${r[1]}</td></tr>`).join('');
+$('#fb').onclick=()=>{const v=$('#fa').value.trim();$('#fr').innerHTML=v.length<30?'<span class="bad">Write a few sentences first – use example F if it helps.</span>':'<span class="good"><b>Lesson complete ✓</b></span> Model answer: visited[] also marks nodes from earlier traversals, so meeting a visited node does not mean the current walk looped. pathVis[] marks only the current walk, so pathVis[curr]==1 proves a cycle.'};
+load(CASES[0].e,0);
+</script></body></html>
